@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Arena Pro 2 - Tournament Master",
+  "description": "A high-end tournament management platform for football leagues with specialized match-to-table assignment and intelligent scheduling.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
