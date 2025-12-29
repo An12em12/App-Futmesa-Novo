@@ -1,6 +1,6 @@
-
 import { GoogleGenAI } from "@google/genai";
 
+// A API Key será injetada automaticamente pelo ambiente do Netlify (configurar em Site Settings > Environment Variables)
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export async function generateTournamentSlogan(name: string): Promise<string> {
@@ -25,6 +25,7 @@ export async function suggestTeamNames(): Promise<string[]> {
     const text = response.text || "";
     return text.split(',').map(s => s.trim());
   } catch (error) {
+    console.error("Gemini suggestion error:", error);
     return ["Galáticos FC", "Vila Real", "União da Bola", "Resenha FC"];
   }
 }

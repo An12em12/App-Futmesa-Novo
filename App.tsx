@@ -1130,7 +1130,7 @@ const App: React.FC = () => {
                             className={`p-4 rounded-2xl border-2 transition-all text-left ${knockoutLogic === 'EFFICIENCY' ? 'bg-emerald-600 border-emerald-600 text-white shadow-lg' : 'bg-white border-slate-100 hover:border-emerald-200'}`}
                          >
                             <p className="font-black text-xs uppercase mb-1">Aproveitamento</p>
-                            <p className={`text-[10px] ${knockoutLogic === 'EFFICIENCY' ? 'text-emerald-50' : 'text-slate-400'}`}>Melhor Geral vs Pior Geral</p>
+                            <p className={`text-[10px] ${knockoutLogic === 'EFFICIENCY' ? 'text-slate-400' : 'text-slate-400'}`}>Melhor Geral vs Pior Geral</p>
                          </button>
                       </div>
                     </div>
@@ -1494,8 +1494,10 @@ const App: React.FC = () => {
                   <div className="print-section print-full-page">
                     <h2 className="text-xl font-black mb-6 border-l-4 border-emerald-500 pl-4 uppercase">Histórico de Jogos</h2>
                     <div className="space-y-8">
-                      {Object.entries(matchesByRound).sort(([a], [b]) => Number(a) - Number(b)).map(([round, matches]) => {
+                      {Object.entries(matchesByRound).sort(([a], [b]) => Number(a) - Number(b)).map(([round, matchesData]) => {
+                        const matches = matchesData as Match[];
                         const stage = matches[0]?.stage;
+                        if (!stage) return null;
                         const stageLabel = (stage === 'LEAGUE' || stage === 'GROUP') ? `Rodada ${round}` : `${STAGE_LABELS[stage]} (Rodada ${round})`;
                         return (
                           <div key={round}>
@@ -1882,7 +1884,7 @@ const MatchRow: React.FC<{
   };
 
   const isHomeWinner = match.isFinished && (match.homeScore! > match.awayScore! || (match.homeScore === match.awayScore && showAdvantage && match.advantageTeamId === match.homeTeamId));
-  const isAwayWinner = match.isFinished && (match.awayScore! > match.homeScore! || (match.homeScore === match.awayScore && showAdvantage && match.advantageTeamId === match.awayTeamId));
+  const isAwayWinner = match.isFinished && (match.awayScore! > match.homeScore! || (match.homeScore === match.awayScore && showAdvantage && match.advantageTeamId === match.advantageTeamId));
 
   const bgClass = variant === 'dark' 
     ? `bg-white/5 border-white/10 ${match.isFinished && !isEditingScore ? 'opacity-60' : 'hover:bg-white/10 shadow-lg'}`
@@ -2014,12 +2016,13 @@ const BracketView: React.FC<{
   onEditTeam: (id: string) => void
 }> = ({ tournament, resolveTeam, onUpdateMatch, onEditTeam }) => {
   const knockoutStages: Stage[] = ['ROUND_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'FINAL'];
-  const stagesInTournament = Array.from(new Set(tournament.matches.map(m => m.stage))).filter(s => knockoutStages.includes(s));
+  const stagesInTournament = Array.from(new Set(tournament.matches.map(m => m.stage))).filter(s => knockoutStages.includes(s as Stage)) as Stage[];
   const orderedStages = knockoutStages.filter(s => stagesInTournament.includes(s));
   
   const getStageMatches = (stage: Stage) => tournament.matches.filter(m => m.stage === stage);
 
-  const splitMatches = (matches: Match[]) => {
+  /* Define explicit return type for splitMatches to ensure tuple destructuring works correctly in TypeScript */
+  const splitMatches = (matches: Match[]): [Match[], Match[]] => {
     const half = Math.ceil(matches.length / 2);
     return [matches.slice(0, half), matches.slice(half)];
   };
@@ -2137,7 +2140,7 @@ const BracketMatch: React.FC<{
   };
 
   const isHomeWinner = match.isFinished && (match.homeScore! > match.awayScore! || (match.homeScore === match.awayScore && showAdvantage && match.advantageTeamId === match.homeTeamId));
-  const isAwayWinner = match.isFinished && (match.awayScore! > match.homeScore! || (match.homeScore === match.awayScore && showAdvantage && match.advantageTeamId === match.awayTeamId));
+  const isAwayWinner = match.isFinished && (match.awayScore! > match.homeScore! || (match.homeScore === match.awayScore && showAdvantage && match.advantageTeamId === match.advantageTeamId));
 
   const isFinal = side === 'final';
 
